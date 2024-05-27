@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+    <h1>Вход</h1>
+    {% if form.errors %}
+        <p>
+            Неверный логин или пароль.
+            Попробуйте еще раз.
+        </p>
+    {% else %}
+        <p>Пожалуйста, используйте форма для входа. Если у вас нет аккаунта <a href ="{% url 'register' %}">зарегиструйтесь</a>.</p>
+    {% endif %}
+    <div class="login-form">
+        <form action="{% url 'login' %}" method="post">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}"/>
+            <p><input type="submit" value="Log-in"></p>
+            <p>
+                <a href = {% url 'password_reset' %}>
+                    Забыли пароль?
+                </a>
+            </p>
+        </form>
+        <ul>
+            <li class="google">
+                <a href="{% url "social:begin" "google-oauth2" %}">
+                        Sign in with Google
+                </a>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
