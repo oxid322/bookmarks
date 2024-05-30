@@ -18,13 +18,14 @@
                 <a href="{% url "images:list" %}">Images</a>
             </li>
             <li {% if section == "people" %}class="selected"{% endif %}>
-                <a href="#">People</a>
+                <a href="{% url "users_list" %}">People</a>
             </li>
+
         </ul>
         {% endif %}
         <span class="user">
             {% if request.user.is_authenticated %}
-                Привет {{ request.user.first_name|default:request.user.username }},
+                Привет <a href="{% url "edit" %}">{{ request.user.first_name|default:request.user.username }}</a>,
                 <a href="{% url "logout" %}">Выход</a>
             {% else %}
                 <a href="{% url "login" %}">Вход</a>
