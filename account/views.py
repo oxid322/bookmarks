@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 from .models import Contact
 from actions.utils import create_action
 from actions.models import Action
-
+from .utils import pluralize_str
 
 def user_login(request):
     if request.method == 'POST':
@@ -52,7 +52,7 @@ def register(request):
 
             # Создать профиль пользователя
             Profile.objects.create(user=new_user)
-            create_action(new_user, 'has created an account')
+            create_action(new_user, 'создал(а) аккаунт')
             return render(request,
                           'account/template/register_done.html',
                           {'new_user': new_user})
@@ -65,18 +65,23 @@ def register(request):
 
 @login_required
 def dashboard(request):
-    #по умолчанию показать все действия
+    # по умолчанию показать все действия
     actions = Action.objects.exclude(user=request.user)
     following_ids = request.user.following.values_list('id',
                                                        flat=True)
     if following_ids:
-        #Еесли пользователь подписан на других то извлечь только их действия
+        # Еесли пользователь подписан на других то извлечь только их действия
         actions = actions.filter(user_id__in=following_ids)
     actions = actions.select_related('user', 'user__profile')[:10].prefetch_related('target')[:10]
+
+    total_images = request.user.images_created.count()
+    images_pluralize = pluralize_str(total_images)
+
     return render(request,
                   'account/dashboard.html',
                   {'section': 'dashboard',
-                   'actions': actions})
+                   'actions': actions,
+                   'images_pluralize': images_pluralize})
 
 
 @login_required
@@ -137,7 +142,7 @@ def user_follow(request):
                 Contact.objects.get_or_create(
                     user_from=request.user,
                     user_to=user)
-                create_action(request.user, 'is following', user)
+                create_action(request.user, 'подписался(ась)', user)
             else:
                 Contact.objects.filter(user_from=request.user,
                                        user_to=user).delete()

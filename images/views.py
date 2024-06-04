@@ -31,7 +31,7 @@ def image_create(request):
             new_image = form.save(commit=False)
             new_image.user = request.user
             new_image.save()
-            create_action(request.user, 'bookmarked image', new_image)
+            create_action(request.user, 'сохранил(а)', new_image)
             messages.success(request, 'Изображение успешно добавлено')
             # перенаправить к представлению детальной
             # информации о только что созданном элементе
@@ -69,7 +69,7 @@ def image_like(request):
             image = Image.objects.get(id=image_id)
             if action == 'like':
                 image.users_like.add(request.user)
-                create_action(request.user, 'likes', image)
+                create_action(request.user, 'лайкнул(а)', image)
             else:
                 image.users_like.remove(request.user)
             return JsonResponse({'status': 'ok'})
